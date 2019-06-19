@@ -2,7 +2,7 @@
   <span
     class="navbar-brand"
     href="#"
-  >Decathlon Staff Card Maker</span>
+  >Decathlon Staff Card Maker Tool Box</span>
 
   <div
     class="collapse navbar-collapse"
@@ -11,7 +11,7 @@
     <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
       <li class="nav-item dropdown">
         <span class="version">
-          V0.99&nbsp;Beta
+          v0.1.0&nbsp;Beta
         </span>
       </li>
     </ul>
@@ -20,101 +20,227 @@
 
 <main
   role="main"
-  class="container"
+  class="container site-content"
 >
   <form class="row">
-    <div class="col-md-6">
-      <div class="form-container">
-        <div class="text-center mb-1">
-          <img
-            class="mb-4"
-            src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg"
-            alt=""
-            width="72"
-            height="72"
-          >
-          <h1 class="h3 mb-3 font-weight-normal">Your Staff Card Photo</h1>
-          <p>
-
-          </p>
+    <div class="col-md-4">
+      <div class="card mt-md-3">
+        <h4 class="card-header">First, your avatar photo</h4>
+        <div class="card-body">
+          <p class="card-title">You can choose your favorite avatar here.</p>
+          <label
+            class="btn btn-primary btn-sm d-flex"
+            for="uploadImageBtn"
+            title="Upload image file"
+          > <input
+              #uploadImageBtn
+              id="uploadImageBtn"
+              type="file"
+              class="sr-only"
+              name="file"
+              accept=".jpg,.jpeg,.png"
+              (change)="fileChangeEvent($event)"
+            >
+            <mat-icon>cloud_upload</mat-icon>
+            <span
+              class="docs-tooltip ml-md-2"
+              data-toggle="tooltip"
+              data-animation="true"
+              title="请选择您要上传的图像(jpg, png)"
+            >
+              选择图像
+            </span>
+          </label>
+          <image-cropper
+            *ngIf="imageChangedEvent"
+            format="png"
+            class="img-thumbnail"
+            [roundCropper]="true"
+            [imageChangedEvent]="imageChangedEvent"
+            [maintainAspectRatio]="true"
+            [aspectRatio]="1 / 1"
+            [resizeToWidth]="360"
+            (imageCropped)="onImageCropped($event)"
+            (loadImageFailed)="loadImageFailed()"
+          ></image-cropper>
         </div>
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="form-container">
-        <div class="text-center mb-1">
-          <img
-            class="mb-4"
-            src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg"
-            alt=""
-            width="72"
-            height="72"
+    <div class="col-md-4">
+      <div class="card mt-md-3">
+        <h4 class="card-header">Second, your staff card Info</h4>
+        <div class="card-body">
+          <p class="card-title">Click refresh button to filling out the info.</p>
+          <label
+            class="btn btn-primary btn-sm d-flex"
+            for="refreshPhotoBtn"
+            title="Refresh image file"
+          > <input
+              type="button"
+              id="refreshPhotoBtn"
+              class="sr-only"
+              (click)="onRefreshPhotoText()"
+            >
+            <mat-icon>refresh</mat-icon>
+            <span
+              class="docs-tooltip ml-md-2"
+              data-toggle="tooltip"
+              data-animation="true"
+              title="您可以点击以刷新图像上的文字"
+            >
+              刷新图像文字
+            </span>
+          </label>
+
+          <mat-form-field
+            appearance="fill"
+            hintLabel="Max 30 characters"
           >
-          <h1 class="h3 mb-3 font-weight-normal">Your Staff Card Information</h1>
-          <p>
-            1. Please upload the avatar you used for cropping.
-            <br>
-            2. Click Save button after filling out the information.
-          </p>
+            <mat-label>姓名</mat-label>
+            <input
+              #name
+              name="name"
+              [(ngModel)]="nameInput"
+              matInput
+              placeholder="请在这里填入您的姓名"
+              maxlength="30"
+              required
+            >
+            <mat-hint align="end">{{name.value?.length || 0}}/30</mat-hint>
+            <mat-icon matSuffix>account_box</mat-icon>
+          </mat-form-field>
+          【姓名】大小：
+          <mat-slider
+            thumbLabel
+            min="32"
+            max="72"
+            tickInterval="1"
+            [value]="nameFontSize"
+            (change)="onChangeNameFontSize($event)"
+          ></mat-slider>
+          {{nameFontSize}} px
+          【姓名】高度：
+          <mat-slider
+            thumbLabel
+            min="480"
+            max="800"
+            tickInterval="1"
+            [value]="nameFontHeight"
+            (change)="onChangeNameFontHeight($event)"
+          ></mat-slider>
+          {{nameFontHeight}} px
+
+          <mat-form-field
+            appearance="fill"
+            hintLabel="Max 30 characters"
+          >
+            <mat-label>部门</mat-label>
+            <input
+              #partsment
+              name="partsment"
+              [(ngModel)]="partsmentInput"
+              matInput
+              placeholder="请在这里填入您的部门"
+              required
+            >
+            <mat-hint align="end">{{partsment.value?.length || 0}}/30</mat-hint>
+            <mat-icon matSuffix>chat</mat-icon>
+          </mat-form-field>
+          【部门】大小：
+          <mat-slider
+            thumbLabel
+            min="32"
+            max="72"
+            [value]="partsmentFontSize"
+            tickInterval="1"
+            (change)="onPartsmentFontSize($event)"
+          ></mat-slider>
+          {{partsmentFontSize}} px
+          【部门】高度：
+          <mat-slider
+            thumbLabel
+            min="480"
+            max="800"
+            [value]="partsmentFontHeight"
+            tickInterval="1"
+            (change)="onChangePartsmentFontHeight($event)"
+          ></mat-slider>
+          {{partsmentFontHeight}} px
+
+          <mat-form-field
+            appearance="fill"
+            hintLabel="Max 30 characters"
+          >
+            <mat-label>职务</mat-label>
+            <input
+              #job
+              name="job"
+              [(ngModel)]="jobInput"
+              matInput
+              placeholder="请在这里填入您的职务"
+              maxlength="30"
+              required
+            >
+            <mat-hint align="end">{{job.value?.length || 0}}/30</mat-hint>
+            <mat-icon matSuffix>work</mat-icon>
+          </mat-form-field>
+          【职务】大小：
+          <mat-slider
+            thumbLabel
+            min="32"
+            max="72"
+            [value]="jobFontSize"
+            tickInterval="1"
+            (change)="onChangeJonFontSize($event)"
+          ></mat-slider>
+          {{jobFontSize || 32}} px
+          【职务】高度：
+          <mat-slider
+            thumbLabel
+            min="480"
+            max="800"
+            [value]="jobFontHeight"
+            tickInterval="1"
+            (change)="onChangeJobFontHeight($event)"
+          ></mat-slider>
+          {{jobFontHeight}} px
         </div>
+      </div>
 
-        <mat-form-field
-          appearance="fill"
-          hintLabel="Max 30 characters"
-        >
-          <mat-label>姓名</mat-label>
-          <input
-            #nameInput
-            matInput
-            placeholder="请在这里填入您的姓名"
-            maxlength="30"
-            required
+    </div>
+    <div class="col-md-4">
+      <div class="card mt-md-3">
+        <h4 class="card-header">Done, and photo preview</h4>
+        <div class="card-body">
+          <p class="card-title">Click button or right click to download.</p>
+          <a
+            class="btn btn-primary btn-sm d-flex"
+            id="downloadPhotoBtn"
+            download="{{nameInput}}-{{partsmentInput}}-{{jobInput}}.jpg"
+            [href]="croppedImage"
           >
-          <mat-hint align="end">{{nameInput.value?.length || 0}}/30</mat-hint>
-          <mat-icon matSuffix>account_box</mat-icon>
-        </mat-form-field>
-
-        <mat-form-field
-          appearance="fill"
-          hintLabel="Max 30 characters"
-        >
-          <mat-label>职务</mat-label>
-          <input
-            #jobInput
-            matInput
-            placeholder="请在这里填入您的职务"
-            maxlength="30"
-            required
-          >
-          <mat-hint align="end">{{jobInput.value?.length || 0}}/30</mat-hint>
-          <mat-icon matSuffix>work</mat-icon>
-        </mat-form-field>
-
-        <mat-form-field
-          appearance="fill"
-          hintLabel="Max 30 characters"
-        >
-          <mat-label>职能</mat-label>
-          <input
-            #workInput
-            matInput
-            placeholder="请在这里填入您的职能"
-            required
-          >
-          <mat-hint align="end">{{workInput.value?.length || 0}}/30</mat-hint>
-          <mat-icon matSuffix>chat</mat-icon>
-        </mat-form-field>
-
-        <button
-          class="btn btn-lg btn-primary btn-block"
-          type="submit"
-        >Save My Photo</button>
+            <mat-icon>cloud_download</mat-icon>
+            <span
+              class="docs-tooltip ml-md-2"
+              data-toggle="tooltip"
+              data-animation="true"
+              title="您可以点击以下载图像"
+            >
+              下载图像
+            </span>
+          </a>
+          <img
+            *ngIf="croppedImage"
+            class="img-thumbnail img-responsive"
+            [src]="croppedImage"
+          />
+        </div>
       </div>
     </div>
   </form>
 </main>
 
-<footer class="footer">
+<footer class="footer navbar-fixed-bottom">
   <div class="text-center">
     &copy; 2019-2020 Decathlon. by Sandy XU
   </div>
