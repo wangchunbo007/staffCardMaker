@@ -56,6 +56,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   jobFontSize = 56;
   jobFontHeight = 720;
 
+  /** 漢字REG */
+  reg = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+
+  /** フォントファイル */
+  fontFile: string;
+
   /**
    * ライフスタイル
    */
@@ -141,6 +147,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     // 先ずは、画像をキャッシュすること
     this.cacheImage = event;
 
+    if (!this.nameInput.match(this.reg)) {
+      this.fontFile = 'assets/fonts/font-' + this.nameFontSize + '.fnt';
+    } else {
+      this.fontFile = 'assets/fonts/CH/font-' + this.nameFontSize + '-CH.fnt';
+    }
+
     // 画像を読み込む
     // read template
     Promise.all(
@@ -163,7 +175,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           });
       })
       .then(background => {
-        return Jimp.loadFont('assets/fonts/font-' + this.nameFontSize + '.fnt').then(font => {
+        return Jimp.loadFont(this.fontFile).then(font => {
           // テキストを書き込む
           return background.print( // 名前
             font,
@@ -174,7 +186,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         });
       })
       .then(background => {
-        return Jimp.loadFont('assets/fonts/font-' + this.partsmentFontSize + '.fnt').then(font => {
+        return Jimp.loadFont(this.fontFile).then(font => {
           // テキストを書き込む
           return background.print( // 部門
             font,
@@ -185,7 +197,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         });
       })
       .then(background => {
-        return Jimp.loadFont('assets/fonts/font-' + this.jobFontSize + '.fnt').then(font => {
+        return Jimp.loadFont(this.fontFile).then(font => {
           // テキストを書き込む
           return background.print( // 役職
             font,

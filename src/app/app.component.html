@@ -11,7 +11,7 @@
     <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
       <li class="nav-item dropdown">
         <span class="version">
-          v0.1.0&nbsp;Beta
+          v0.2.0&nbsp;Beta
         </span>
       </li>
     </ul>
@@ -70,7 +70,10 @@
       <div class="card mt-md-3">
         <h4 class="card-header">Second, your staff card Info</h4>
         <div class="card-body">
-          <p class="card-title">Click refresh button to filling out the info.</p>
+          <div class="card-title">
+            Click refresh button to filling out the info.<br>
+            <div class="text-danger">Attention! Using Chinese will result in a much lower output efficiency of the image.</div>
+          </div>
           <label
             class="btn btn-primary btn-sm d-flex"
             for="refreshPhotoBtn"
@@ -96,7 +99,7 @@
             appearance="fill"
             hintLabel="Max 30 characters"
           >
-            <mat-label>姓名</mat-label>
+            <mat-label>姓名(Name)</mat-label>
             <input
               #name
               name="name"
@@ -134,7 +137,7 @@
             appearance="fill"
             hintLabel="Max 30 characters"
           >
-            <mat-label>部门</mat-label>
+            <mat-label>部门(Department)</mat-label>
             <input
               #partsment
               name="partsment"
@@ -171,7 +174,7 @@
             appearance="fill"
             hintLabel="Max 30 characters"
           >
-            <mat-label>职务</mat-label>
+            <mat-label>职务(Title)</mat-label>
             <input
               #job
               name="job"
@@ -216,7 +219,7 @@
           <a
             class="btn btn-primary btn-sm d-flex"
             id="downloadPhotoBtn"
-            download="{{nameInput}}-{{partsmentInput}}-{{jobInput}}.jpg"
+            download="{{nameInput}}-{{partsmentInput}}-{{jobInput}}.png"
             [href]="croppedImage"
           >
             <mat-icon>cloud_download</mat-icon>
