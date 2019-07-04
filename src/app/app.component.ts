@@ -1,6 +1,8 @@
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import * as Jimp from 'jimp';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
+import { OverlayComponent } from './overlay/overlay.component';
 
 @Component({
   selector: 'app-root',
@@ -32,35 +34,55 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   /** ラウンドマスク */
   roundMask = null;
 
-  /** ラウンドマスク */
-  myFont = null;
-
-  /** 名前 */
+  /** 【名前】 */
   nameInput = '';
-
-  /** 部門 */
-  partsmentInput = '';
-
-  /** 役職 */
-  jobInput = '';
-
-  /** 【姓名】字体 */
   nameFontSize = 56;
   nameFontHeight = 580;
+  nameFontFile: string; // フォントファイル
 
-  /** 【部门】字体 */
+  /** 【部門】 */
+  partsmentInput = '';
   partsmentFontSize = 56;
   partsmentFontHeight = 650;
+  partsmentFontFile: string; // フォントファイル
 
-  /** 【职务】字体 */
+  /** 【役職】 */
+  jobInput = '';
   jobFontSize = 56;
   jobFontHeight = 720;
+  jobFontFile: string; // フォントファイル
 
   /** 漢字REG */
   reg = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
 
-  /** フォントファイル */
-  fontFile: string;
+  /** ローディング */
+  dialogRef: MatDialogRef<OverlayComponent, any>;
+
+  /**
+   * コンストラクタ
+   * @param overlay ダイアログ
+   */
+  constructor(private overlay: MatDialog) { }
+
+  /**
+   * ローディングを開く
+   */
+  openOverlay(): void {
+    this.dialogRef = this.overlay.open(OverlayComponent, {
+      width: '130px',
+      height: '130px',
+      disableClose: true,
+    });
+  }
+
+  /**
+   * ローディングを閉じる
+   */
+  closeOverlay(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    }
+  }
 
   /**
    * ライフスタイル
@@ -74,7 +96,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.backgroundImage = null;
     this.roundMask = null;
-    this.myFont = null;
   }
 
   /**
@@ -144,13 +165,26 @@ export class AppComponent implements AfterViewInit, OnDestroy {
    * @param event イベント
    */
   onImageCropped(event: ImageCroppedEvent) {
+    this.openOverlay();
     // 先ずは、画像をキャッシュすること
     this.cacheImage = event;
 
     if (!this.nameInput.match(this.reg)) {
-      this.fontFile = 'assets/fonts/font-' + this.nameFontSize + '.fnt';
+      this.nameFontFile = 'assets/fonts/font-' + this.nameFontSize + '.fnt';
     } else {
-      this.fontFile = 'assets/fonts/CH/font-' + this.nameFontSize + '-CH.fnt';
+      this.nameFontFile = 'assets/fonts/CH/font-' + this.nameFontSize + '-CH.fnt';
+    }
+
+    if (!this.partsmentInput.match(this.reg)) {
+      this.partsmentFontFile = 'assets/fonts/font-' + this.partsmentFontSize + '.fnt';
+    } else {
+      this.partsmentFontFile = 'assets/fonts/CH/font-' + this.partsmentFontSize + '-CH.fnt';
+    }
+
+    if (!this.jobInput.match(this.reg)) {
+      this.jobFontFile = 'assets/fonts/font-' + this.jobFontSize + '.fnt';
+    } else {
+      this.jobFontFile = 'assets/fonts/CH/font-' + this.jobFontSize + '-CH.fnt';
     }
 
     // 画像を読み込む
@@ -175,7 +209,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           });
       })
       .then(background => {
-        return Jimp.loadFont(this.fontFile).then(font => {
+        return Jimp.loadFont(this.nameFontFile).then(font => {
           // テキストを書き込む
           return background.print( // 名前
             font,
@@ -186,7 +220,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         });
       })
       .then(background => {
-        return Jimp.loadFont(this.fontFile).then(font => {
+        return Jimp.loadFont(this.partsmentFontFile).then(font => {
           // テキストを書き込む
           return background.print( // 部門
             font,
@@ -197,7 +231,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         });
       })
       .then(background => {
-        return Jimp.loadFont(this.fontFile).then(font => {
+        return Jimp.loadFont(this.jobFontFile).then(font => {
           // テキストを書き込む
           return background.print( // 役職
             font,
@@ -212,6 +246,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         // export image
         background.getBase64(Jimp.MIME_PNG, (err, res) => {
           this.croppedImage = res;
+          this.closeOverlay();
         });
       })
       .catch(err => {
